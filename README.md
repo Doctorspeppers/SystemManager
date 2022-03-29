@@ -1,1 +1,17 @@
 # SystemManager
+
+
+    ✅ Connect and open new terminals for instances
+    ✅ Command in the same time for all instances
+    ✅ Choose profile and continent
+    ✅ Mantain a file with instances
+    ✅ <bold> Beautiful terminal-interface </bold>😖
+    ❓ Script for all instances
+    ❓ Send and receive files with Manager
+    ❌ Verify state of instance
+    ❌ Advanced error handling and pipe
+    ❌ Advanced system for control instances
+    ❌ Get diferent ssh key type (Only .pem in this moment)
+    ❌ Send and receive files between instances and
+
+##### So far, they have been spent: 6 hours in this project
