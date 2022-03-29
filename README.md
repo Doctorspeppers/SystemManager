@@ -5,7 +5,7 @@
     ✅ Command in the same time for all instances
     ✅ Choose profile and continent
     ✅ Mantain a file with instances
-    ✅ <bold> Beautiful terminal-interface </bold>😖
+    ✅ Beautiful terminal-interface😖
     ❓ Script for all instances
     ❓ Send and receive files with Manager
     ❌ Verify state of instance
