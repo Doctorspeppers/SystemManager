@@ -1,8 +1,5 @@
 #!/usr/bin/python3
 from distutils.log import error
-from glob import glob
-from pickle import FALSE
-from posixpath import split
 from simple_term_menu import TerminalMenu
 from tabulate import tabulate
 import os
@@ -53,8 +50,8 @@ def ASCII():
 
 
 def getSshKey(key_name):
-    keys = glob.glob(os.getcwd()+"/keys/*")
-    if len(keys) > 1:
+    keys = os.listdir(os.getcwd()+"/keys/")
+    if len(keys) != 0:
         for key in keys:
             if key_name == key.split(".")[0]:
                 return os.getcwd()+"/keys/"+key
@@ -63,7 +60,7 @@ def system(command):
     try:
         os.system(command)
     except OSError:
-        print("Algo deu errado com a instancia "+instance['id'])
+        print(OSError)
 
 def sendFile(local_path=None,ssh_path=None,instance=None,all_machines=False,reverse=False):
     if type(instance) == dict and type(all_machines) == list:
@@ -130,20 +127,20 @@ def shellOneMachine(instance = None,entry_index=False,index=False,command=False,
                 prefix = "ssh -i " + getSshKey(instance['ssh_key']) +" "+instance["ssh_user"]+"@"+instance["public_ip"]
                 system(prefix+"bash -s < "+script)
 
-        elif instance != None and entry_index != None and index != False:
-            if index == 0:
-                command = "gnome-terminal -- ssh -i " + getSshKey(instance['ssh_key']) +" "+instance["ssh_user"]+"@"+instance["public_ip"]
-                system(command)
-            elif index == 1 and command != None:
-                if 'name_tag' in instance:
-                    print(instance['name_tag']+" "+instance["ssh_user"]+"@"+instance["public_ip"])
-                else:
-                    print(instance["ssh_user"]+"@"+instance["public_ip"])
-                prefix = "ssh -i " + getSshKey(instance['ssh_key']) +" "+instance["ssh_user"]+"@"+instance["public_ip"]
-                system(prefix+" '"+command+"'")
-            elif index == 2 and script != None:
-                prefix = "ssh -i " + getSshKey(instance['ssh_key']) +" "+instance["ssh_user"]+"@"+instance["public_ip"]
-                system(prefix+"bash -s < "+script)
+    elif instance != None and entry_index != None and index != False:
+        if index == "zero": 
+            command = "gnome-terminal -- ssh -i " + getSshKey(instance['ssh_key']) +" "+instance["ssh_user"]+"@"+instance["public_ip"]
+            system(command)
+        elif index == 1 and command != None:
+            if 'name_tag' in instance:
+                print(instance['name_tag']+" "+instance["ssh_user"]+"@"+instance["public_ip"])
+            else:
+                print(instance["ssh_user"]+"@"+instance["public_ip"])
+            prefix = "ssh -i " + getSshKey(instance['ssh_key']) +" "+instance["ssh_user"]+"@"+instance["public_ip"]
+            system(prefix+" '"+command+"'")
+        elif index == 2 and script != None:
+            prefix = "ssh -i " + getSshKey(instance['ssh_key']) +" "+instance["ssh_user"]+"@"+instance["public_ip"]
+            system(prefix+"bash -s < "+script)
 
 def shellAllMachines():
     instances = listAllMachines(terminal=False)
@@ -156,9 +153,10 @@ def shellAllMachines():
     menu_entry_index = terminal_menu.show()
     for instance in instances:
         if menu_entry_index == 0:
-            shellOneMachine(instance = instance,entry_index=True,index=0)
+            shellOneMachine(instance = instance,entry_index=True,index="zero") # 0 == false: True
         elif menu_entry_index == 1:
             print("digite 'q' para sair")
+            command = ""
             while command != "q":
                 command = input("all instances ~:$")
                 shellOneMachine(instance = instance,entry_index=True,index=1,command=command)
