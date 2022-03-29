@@ -9,9 +9,7 @@ import os
 import re
 import json
 """
-falta funcão de install e script de setup
 Falta possibilidade de chaves alem de .pem
-
 """
 global STOP
 global USER
@@ -61,6 +59,11 @@ def getSshKey(key_name):
             if key_name == key.split(".")[0]:
                 return os.getcwd()+"/keys/"+key
 
+def system(command):
+    try:
+        os.system(command)
+    except OSError:
+        print("Algo deu errado com a instancia "+instance['id'])
 
 def sendFile(local_path=None,ssh_path=None,instance=None,all_machines=False,reverse=False):
     if type(instance) == dict and type(all_machines) == list:
@@ -72,38 +75,96 @@ def sendFile(local_path=None,ssh_path=None,instance=None,all_machines=False,reve
         command = "scp -i "+getSshKey(instance["ssh_key"])+" "
         if reverse == False:
             if local_path == None and ssh_path == None:
-                local_path = input("Escreva o caminho absoluto do arquivo/pasta a ser copiado:")
-                ssh_path = input("Escreva o caminho absoluto da pasta a ser salvo os arquivos:")
+                local_path = input("Digite o caminho absoluto do arquivo/pasta a ser copiado:")
+                ssh_path = input("Digite o caminho absoluto da pasta a ser salvo os arquivos:")
             command = command + local_path + " " +connection+":"+ssh_path
-            os.system(command)
+            system(command)
         elif reverse == True:
             if local_path == None and ssh_path == None:
-                local_path = input("Escreva o caminho absoluto do arquivo/pasta a ser salvo do servidor:")
-                ssh_path = input("Escreva o caminho absoluto da pasta a ser copiado os arquivos:")
+                local_path = input("Digite o caminho absoluto do arquivo/pasta a ser salvo do servidor:")
+                ssh_path = input("Digite o caminho absoluto da pasta a ser copiado os arquivos:")
             command = command +connection+":"+ssh_path + " "  + local_path 
-            os.system(command)
+
+
     elif all_machines==True and instance == None:
         instances = listAllMachines()
         if reverse == False:
-            local_path = input("Escreva o caminho absoluto do arquivo a ser copiado:")
-            ssh_path = input("Escreva o caminho absoluto a ser salvo em todos os servidores:")
+            local_path = input("Digite o caminho absoluto do arquivo a ser copiado:")
+            ssh_path = input("Digite o caminho absoluto a ser salvo em todos os servidores:")
             for instace in instances:
                 sendFile(local_path=local_path,ssh_path=ssh_path,instance=instace)
         elif reverse == True:
             print("AVISO, SERA CRIADO SUB-PASTAS PARA SEPARAR CADA ARQUIVO DE CADA SERVIDOR")
-            ssh_path = input("Escreva o caminho absoluto do arquivo a ser copiado de servidores:")
-            local_path = input("Escreva o caminho absoluto da pasta a ser salvo os arquivos:")
+            ssh_path = input("Digite o caminho absoluto do arquivo a ser copiado de servidores:")
+            local_path = input("Digite o caminho absoluto da pasta a ser salvo os arquivos:")
             for instace in instances:
                 local_path_for_instance = local_path + "/" + instance['id'] + "/"
-                os.system("mkdir "+ local_path)
+                system("mkdir "+ local_path)
                 sendFile(local_path=local_path_for_instance,ssh_path=ssh_path,instance=instace,reverse=True)
 
 
-def shellOneMachine():
-    return "X"
+def shellOneMachine(instance = None,entry_index=False,index=False,command=False,script=None):
+    if instance == None:
+        listAllMachines()
+    elif instance != None and entry_index == False:
+        if entry_index == False:
+        
+            options = ["[1] Abrir novo terminal",
+                "[2] Usar este terminal",
+                "[3] Executar script", 
+                "[q] Exit"]
+
+            terminal_menu = TerminalMenu(options,menu_highlight_style=("fg_black","bold","bg_green"),shortcut_key_highlight_style=("fg_gray",),title="Server manager \n"+ASCIIPEPPER()+"\n\n"+ASCII())
+            menu_entry_index = terminal_menu.show()
+            if menu_entry_index == 0:
+                command = "gnome-terminal -- ssh -i " + getSshKey(instance['ssh_key']) +" "+instance["ssh_user"]+"@"+instance["public_ip"]
+                system(command)
+            elif menu_entry_index == 1:
+                print("digite 'q' para sair")
+                while command != "q":
+                    prefix = "ssh -i " + getSshKey(instance['ssh_key']) +" "+instance["ssh_user"]+"@"+instance["public_ip"]
+                    command = input(instance["ssh_user"]+"@"+instance["public_ip"]+"~:$")
+                    system(prefix+" '"+command+"'")
+            elif menu_entry_index == 2:
+                script = input("Digite o caminho absoluto do script a ser executado:")
+                prefix = "ssh -i " + getSshKey(instance['ssh_key']) +" "+instance["ssh_user"]+"@"+instance["public_ip"]
+                system(prefix+"bash -s < "+script)
+
+        elif instance != None and entry_index != None and index != False:
+            if index == 0:
+                command = "gnome-terminal -- ssh -i " + getSshKey(instance['ssh_key']) +" "+instance["ssh_user"]+"@"+instance["public_ip"]
+                system(command)
+            elif index == 1 and command != None:
+                if 'name_tag' in instance:
+                    print(instance['name_tag']+" "+instance["ssh_user"]+"@"+instance["public_ip"])
+                else:
+                    print(instance["ssh_user"]+"@"+instance["public_ip"])
+                prefix = "ssh -i " + getSshKey(instance['ssh_key']) +" "+instance["ssh_user"]+"@"+instance["public_ip"]
+                system(prefix+" '"+command+"'")
+            elif index == 2 and script != None:
+                prefix = "ssh -i " + getSshKey(instance['ssh_key']) +" "+instance["ssh_user"]+"@"+instance["public_ip"]
+                system(prefix+"bash -s < "+script)
 
 def shellAllMachines():
-    return "X"
+    instances = listAllMachines(terminal=False)
+    options = ["[1] Abrir novo terminal",
+        "[2] Usar este terminal",
+        "[3] Executar script", 
+        "[q] Exit"]
+
+    terminal_menu = TerminalMenu(options,menu_highlight_style=("fg_black","bold","bg_green"),shortcut_key_highlight_style=("fg_gray",),title="Server manager \n"+ASCIIPEPPER()+"\n\n"+ASCII())
+    menu_entry_index = terminal_menu.show()
+    for instance in instances:
+        if menu_entry_index == 0:
+            shellOneMachine(instance = instance,entry_index=True,index=0)
+        elif menu_entry_index == 1:
+            print("digite 'q' para sair")
+            while command != "q":
+                command = input("all instances ~:$")
+                shellOneMachine(instance = instance,entry_index=True,index=1,command=command)
+        elif menu_entry_index == 2:
+            script = input("Digite o caminho absoluto do script a ser executado:")
+            shellOneMachine(instance = instance,entry_index=True,index=2,command=False,script=script)
 
 def updateListMachines():
     if USER == None:
@@ -145,10 +206,11 @@ def machineOptions(instance):
             "[X] Opções avançadas de imagem (Em desenvolvimento)"] 
     functions = [shellOneMachine,
                 sendFile,
+                sendFile,
                 exit]
     terminal_menu = TerminalMenu(options,menu_highlight_style=("fg_black","bold","bg_green"),shortcut_key_highlight_style=("fg_gray",),title="Server manager \n"+ASCIIPEPPER()+"\n\n"+ASCII())
     menu_entry_index = terminal_menu.show()
-    if menu_entry_index == 2:
+    if menu_entry_index == 3:
         functions[menu_entry_index](instance,reverse=True)
     else:
         functions[menu_entry_index](instance)
@@ -185,11 +247,7 @@ def listAllMachines(terminal=True):
     else:
         return instances_info
 
-def addManualMachine():
-    return "X"
 
-def removeManualMachine():
-    return "X"
 
 def chooseContinent():
     global CONTINENT
@@ -244,17 +302,13 @@ def main():
                     "[2] Comando para todas as maquinas", #shellAllMachines
                     "[3] Atualizar lista de maquinas", #updateListMachines
                     "[4] Listar todas as maquinas", #listAllMachines
-                    "[5] Adicionar maquina manualmente", #addManualMachine
-                    "[6] remover maquina manualmente", #removeManualMachine
-                    "[7] Escolha perfil AWS", #chooseAwsProfile
+                    "[5] Escolha perfil AWS", #chooseAwsProfile
                     "[q] Exit",
                     "[X] Opções avançadas de instancias (Em desenvolvimento)"] #exit
         functions = [shellOneMachine,
                     shellAllMachines,
                     updateListMachines,
                     listAllMachines,
-                    addManualMachine,
-                    removeManualMachine,
                     chooseAwsProfile,
                     exit]
         terminal_menu = TerminalMenu(options,menu_highlight_style=("fg_black","bold","bg_green"),shortcut_key_highlight_style=("fg_gray",),title="Server manager \n"+ASCIIPEPPER()+"\n\n"+ASCII())
