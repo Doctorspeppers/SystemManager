@@ -1,0 +1,38 @@
+[
+    {
+        "ssh_user": "ubuntu",
+        "name_tag": "node-base",
+        "id": "i-099a8ebf1950ca660",
+        "public_ip": "18.212.80.15",
+        "plataform": "Linux/UNIX",
+        "state": "running",
+        "ssh_key": "AWSNovo"
+    },
+    {
+        "ssh_user": "bitnami",
+        "name_tag": "Mongo",
+        "id": "i-0459225d33ffaf1b1",
+        "public_ip": "18.212.252.119",
+        "plataform": "Linux/UNIX",
+        "state": "running",
+        "ssh_key": "AWSNovo"
+    },
+    {
+        "ssh_user": "ubuntu",
+        "name_tag": "FW - Inhub",
+        "id": "i-0f37d367f54cf86c5",
+        "public_ip": "34.195.96.158",
+        "plataform": "Linux/UNIX",
+        "state": "running",
+        "ssh_key": "AWSNovo"
+    },
+    {
+        "ssh_user": "ubuntu",
+        "name_tag": "inhub php autoscaling",
+        "id": "i-0fdacf5ad352752fa",
+        "public_ip": "3.91.202.24",
+        "plataform": "Linux/UNIX",
+        "state": "running",
+        "ssh_key": "AWSNovo"
+    }
+]

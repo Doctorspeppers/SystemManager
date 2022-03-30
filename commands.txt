@@ -1,0 +1,3 @@
+date
+uptime
+df -H
