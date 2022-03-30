@@ -14,4 +14,4 @@
     ❌ Get diferent ssh key type (Only .pem in this moment)
     ❌ Send and receive files between instances and
 
-##### So far, they have been spent: 6 hours in this project
+##### So far, they have been spent: 10 hours in this project
