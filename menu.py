@@ -257,7 +257,7 @@ def updateListMachines():
 def machineOptions(instance):
     options = ["[1] Abrir shell", 
             "[2] Enviar arquivo", 
-            "[3] Receber arquivo"
+            "[3] Receber arquivo",
             "[q] Exit",
             "[X] Adicionar tag (Em desenvolvimento)", 
             "[X] Opções avançadas de estado da instancia (Em desenvolvimento)",
