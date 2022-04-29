@@ -58,14 +58,14 @@ def getSshKey(key_name):
             if key_name == key.split(".")[0]:
                 return os.getcwd()+"/keys/"+key
     else:
-        return False
+        return "False"
 
 
 def getSshUser(instance):
     customImage = False
     if USER == None:
         chooseAwsProfile(continent=False)
-    response = os.popen("aws ec2 describe-images --image-ids "+instance["ImageId"]+" --profile "+USER).read()
+    response = os.popen("aws ec2 describe-images --image-ids "+instance["ImageId"]+" --profile "+USER+" --region "+instance["Placement"]["AvailabilityZone"][:-1]).read()
     name = json.loads(response)['Images'][0]['Name']
     if "/" in name:
         name = name.split("/")
