@@ -15,7 +15,7 @@ global USER
 USER = None
 STOP = False
 
-    
+
 
 def ASCIIPEPPER():
     return "\
@@ -291,18 +291,19 @@ def listAllMachines(terminal=True):
         for instance in instances:
             instance_reduced = {}
             for tag in instance["Tags"]:
-                if tag["Key"] == "user":
-                    instance_reduced["ssh_user"] = tag["Value"]
-                else:
-                    instance_reduced['ssh_user'] = getSshUser(instance)
-                if tag['Key'] == "Name":
-                    instance_reduced["name_tag"] = tag['Value']
-            instance_reduced['id'] = instance['InstanceId']
-            instance_reduced['public_ip'] = instance['PublicIpAddress']
-            instance_reduced["plataform"] = instance["PlatformDetails"]
-            instance_reduced["state"] = instance["State"]['Name']
-            instance_reduced['ssh_key'] = instance['KeyName']
-            instances_info.append(instance_reduced)
+                if instance["State"]["Name"] == "running":
+                    if tag["Key"] == "user":
+                        instance_reduced["ssh_user"] = tag["Value"]
+                    else:
+                        instance_reduced['ssh_user'] = getSshUser(instance)
+                    if tag['Key'] == "Name":
+                        instance_reduced["name_tag"] = tag['Value']
+                    instance_reduced['id'] = instance['InstanceId']
+                    instance_reduced['public_ip'] = instance['PublicIpAddress']
+                    instance_reduced["plataform"] = instance["PlatformDetails"]
+                    instance_reduced["state"] = instance["State"]['Name']
+                    instance_reduced['ssh_key'] = instance['KeyName']
+                    instances_info.append(instance_reduced)
         with open("./instances/"+USER+"_table.json","w") as fp:
             json.dump(instances_info,fp,indent=4)
     if len(instances_info) < 1:
